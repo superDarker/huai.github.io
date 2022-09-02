@@ -8,7 +8,7 @@
 	
 		<link href="/favicon.ico" rel="icon">
 	 
-      <title>testpage | Hexo</title>
+      <title>一文了解如何选择适合自己的Docker镜像方案 | Hexo</title>
 	
 <link rel="stylesheet" href="/css/font-awesome/css/font-awesome.css">
 
@@ -110,13 +110,21 @@
 		
 		
 			<header class="entry-header">
-				<h2 class="entry-title"><a class="post-title-link" href="/2022/09/02/testpage/" rel="bookmark">testpage</a></h2>	
+				<h2 class="entry-title"><a class="post-title-link" href="/2022/09/02/%E4%B8%80%E6%96%87%E4%BA%86%E8%A7%A3%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9%E9%80%82%E5%90%88%E8%87%AA%E5%B7%B1%E7%9A%84Docker%E9%95%9C%E5%83%8F%E6%96%B9%E6%A1%88/" rel="bookmark">一文了解如何选择适合自己的Docker镜像方案</a></h2>	
 			</header>
 		
 		<!-- .entry-header -->
 		<div class="entry-content">
 			
-				<h3 id="测试文章"><a href="#测试文章" class="headerlink" title="测试文章"></a>测试文章</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">say some thing</span><br></pre></td></tr></table></figure>
+				<h3 id="一：什么是容器"><a href="#一：什么是容器" class="headerlink" title="一：什么是容器"></a>一：什么是容器</h3><p>简单来说，就是一个运行在你主机上的一个进程隔离的沙盒进程。隔离级别为内核命名空间和cgroups命名空间。<br>从使用上来说： 容器是镜像的运行实例。<br>使用说明：<br>1：你可以使用API或者CLI来创建关闭移动启动停止或者删除。<br>2： 可以运行在本地，虚拟机，或者云服务器。<br>3： 兼容所有系统<br>4：容器之间隔离，可以每个容器使用单独的软件，二进制文件，配置文件。</p>
+<p>###二：什么是容器的镜像<br>当启动一个容器时，使用了一个隔离的文件系统。而这个自定义系统就是由容器镜像提供。由于镜像为容器提供文件系统，所以必须包含运行应用所需的一切（依赖，配置，脚本，二进制文件）。该镜像还包含容器的其他配置，如环境变量，要运行的默认命令和其他元数据。<br>从使用上来说：镜像是容器的“系统盘”，我们可以用这个基础的“系统盘”来安装多个系统。这个“系统盘”必须为容器提供基础的运行环境和一些框架依赖。而当容器一旦使用“系统盘”安装完了系统,那么和“系统盘”的交互就完结了，在容器上安装新的软件，不会影响系统盘，也不会影响别的容器。</p>
+<blockquote>
+<p>PS:所以这里可以了解到，其实镜像并非docker独创，windows在装机的时候也会用到后缀为.iso的镜像文件。<br>扩展：<br>关于chroot，如果你熟悉这个命令，那么可以将容器视为chroot的扩展版本，多出了一些使用时的隔离。</p>
+</blockquote>
+<h3 id="三：单应用单容器的使用方案"><a href="#三：单应用单容器的使用方案" class="headerlink" title="三：单应用单容器的使用方案"></a>三：单应用单容器的使用方案</h3><p>把docker的容器当做一台虚拟机，然后把所有的环境都在容器里进行搭建（如jdk,nginx,mysql,php）。<br>优势：<br>只需要一个容器，不用维护容器间的通讯。<br>当做一台虚拟机使用，更容易上手。<br>多个服务启停都在一个容器里进行操作，更易调试。<br>缺点：<br>  耦合程度高，各个服务互相依赖<br>  占用内存高，各个服务占用的内存导致容器内存居高不下<br>  服务复用率低，如nginx这种通用服务，就无法单独给别的容器用<br>  镜像层数高，一层层堆叠的服务，如果合并到镜像上，会导致镜像变大</p>
+<p>###四：单应用多容器的使用方案<br>把各个服务单独拆出来，单容器只做一件事。比如MySQL容器，Nginx容器等。然后使用Docker Compose对容器进行编排，以满足应用的需求。<br>优点：<br>  统一管理，容器成为一个临时性的系统，可以随时销毁重建，更新依赖。<br>  服务复用率高，一个服务可以对多个容器提供。<br>  镜像大小低，可以用dokcer compose命令快速部署。<br>  优化空间大，后续可以用多阶段构建，将运行时依赖和构建时依赖分开。<br>缺点：<br>  需要docker-compose的基础知识，上手稍慢</p>
+<p>###五：构建属于你自己的镜像<br><a target="_blank" rel="noopener" href="https://docs.docker.com/develop/develop-images/baseimages/">https://docs.docker.com/develop/develop-images/baseimages/</a><br>这里有官方文档对构建自己所需要镜像的方式。就像搭积木，我们先选一个基础镜像（例如debain&#x2F;centOS)。然后在基础镜像上加入我们日常开发所需的依赖和软件。构建完成后把镜像文件推送到docker的仓库或者第三方云托管平台。后面在开发的时候就可以随用随取了。</p>
+
 
 				
 					<div class="license-statement">本文由http://troyyang.com原创编写，转载请尽量保留版权网址，感谢您的理解与分享!</div>
@@ -236,13 +244,13 @@
 		<footer class="entry-footer">
 			<span class="posted-on font-asesome-icon">
 	<a href="" rel="bookmark">
-	<time class="updated" datetime="2022-09-02T06:37:58.000Z">2022-09-02</time>
+	<time class="updated" datetime="2022-09-02T06:43:08.000Z">2022-09-02</time>
 	</a>
 </span>
 
 		
 
-    <span class="eye font-asesome-icon leancloud_visitors" id="/2022/09/02/testpage/" data-flag-title="testpage">
+    <span class="eye font-asesome-icon leancloud_visitors" id="/2022/09/02/%E4%B8%80%E6%96%87%E4%BA%86%E8%A7%A3%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9%E9%80%82%E5%90%88%E8%87%AA%E5%B7%B1%E7%9A%84Docker%E9%95%9C%E5%83%8F%E6%96%B9%E6%A1%88/" data-flag-title="一文了解如何选择适合自己的Docker镜像方案">
          <span class="leancloud-visitors-count">
         
         </span>
